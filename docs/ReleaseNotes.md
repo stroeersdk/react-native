@@ -4,7 +4,7 @@ The Ströer SDK helps publishers integrate banner, interstitial, and rewarded ad
 
 npm package: `react-native-stroeer-sdk`
 
-### [1.0.0] (07.Oct.2026)
+### Release Notes [1.0.0] (07.Oct.2026)
 
 #### New
 - Rebranded the SDK as StröerSDK.
@@ -50,4 +50,4 @@ npm package: `react-native-stroeer-sdk`
   - `getSlotNames` rejects with `CONFIG_NOT_LOADED` instead of resolving `null`, and `getConfiguration` resolves `null` when no configuration is loaded.
 - **StroeerIdentity**: `setEmail`, `setPhone`, `setPuid`, `setRegionCode`, `setCityCode` and `apply` are replaced by `setCustomInfo({ email, phone, puid, regionCode, cityCode })`.
 - **StroeerConfiant**: `initialize` resolves only once; a second call while it is running rejects with `ALREADY_INITIALIZING`.
-- **IabTestConsent** is removed from the library; it is test tooling and now lives in the example app.
+- **IabTestConsent** is removed from the library
