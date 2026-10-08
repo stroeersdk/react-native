@@ -18,9 +18,10 @@ An Expo (prebuild) version of this app lives in [`../expo`](../expo/README.md).
 npm install
 ```
 
-The SDK is vendored at `vendor/react-native-stroeer-sdk-1.0.0-rc1.tgz` and installed as a `file:`
-dependency. Public source of the tarball:
-https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0-rc1.tgz
+The SDK is installed from its tarball URL,
+https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0-rc1.tgz. npm 12 and
+later refuse tarball URLs by default (`EALLOWREMOTE`), so this project has a `.npmrc` with
+`allow-remote=root`, which allows URLs declared in this project's own `package.json`.
 
 ## Run on Android
 
@@ -45,7 +46,8 @@ npm run android      # (or: npx react-native run-android --port 8082)
 | Maven repo | `https://stroeersdk.github.io/android/maven` (`includeGroup("com.stroeer.ads")`) | `android/build.gradle` (`allprojects`) | Where the Android SDK is published |
 | Maven repo | `https://cdn.confiant-integrations.net/backend-integrations/in-app/releases/android/maven` (`includeGroup("com.confiant.android")`) | `android/build.gradle` (`allprojects`) | Optional Confiant module of the SDK |
 | `com.google.android.gms.ads.APPLICATION_ID` | `ca-app-pub-3940256099942544~3347511713` (Google test ID) | `android/app/src/main/AndroidManifest.xml` | Required by the Google Mobile Ads SDK. Use your own |
-| `react-native-stroeer-sdk` | `file:./vendor/react-native-stroeer-sdk-1.0.0-rc1.tgz` | `package.json`, `vendor/` | npm 12 refuses tarball URLs by default (`allow-remote`) |
+| `react-native-stroeer-sdk` | `https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0-rc1.tgz` | `package.json` | The SDK is distributed as a tarball, not via the npm registry |
+| `allow-remote` | `root` | `.npmrc` | npm 12+ refuses tarball URLs by default (`EALLOWREMOTE`) |
 | `@react-native/new-app-screen` | removed | `package.json` | Template welcome screen is not used |
 | Jest mock of the SDK | virtual stub module | `__tests__/App.test.tsx` | Native modules do not exist in Jest |
 | Debug / inspection mode | enabled in `__DEV__` builds only, after `setApplicationName()` | `App.tsx` | The Android example enables them unconditionally |

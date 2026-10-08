@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "StroeerExampleExpo",
+    "slug": "stroeer-example-expo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.stroeer.example.expo"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.stroeer.example.expo"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-dev-client",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26,
+            "extraMavenRepos": [
+              "https://stroeersdk.github.io/android/maven",
+              "https://cdn.confiant-integrations.net/backend-integrations/in-app/releases/android/maven"
+            ]
+          },
+          "ios": {
+            "deploymentTarget": "16.4"
+          }
+        }
+      ],
+      [
+        "./plugins/withStroeerSdk",
+        {
+          "androidAdMobAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAdMobAppId": "ca-app-pub-3940256099942544~1458002511"
+        }
+      ]
+    ]
+  }
+}

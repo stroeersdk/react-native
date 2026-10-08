@@ -55,8 +55,26 @@ start:
 
 ### 1. Add the package
 
+The package is distributed as a tarball, not through the npm registry.
+
+**npm:** npm 12 and later refuse to install packages from a tarball URL by default
+(`EALLOWREMOTE`). Allow URLs declared in your own `package.json` by adding this line to the
+`.npmrc` in your project root:
+
+```ini
+allow-remote=root
+```
+
+Then install the package:
+
 ```bash
-yarn add react-native-stroeer-sdk
+npm install https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0-rc1.tgz
+```
+
+**Yarn:**
+
+```bash
+yarn add react-native-stroeer-sdk@https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0-rc1.tgz
 ```
 
 ### 2. Android: add the SDK repository
