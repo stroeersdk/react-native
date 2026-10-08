@@ -3,7 +3,7 @@
 Expo (CNG / prebuild) version of the bare React Native example in [`../react-native`](../react-native/README.md).
 Same behaviour and strings: SDK init, banner `b1` with targeting and Reload, interstitial, rewarded,
 consent buttons gated on `isAvailable()`, toasts and an on-screen event log. Uses
-`react-native-stroeer-sdk` 1.0.0-rc1 on **Expo SDK 57 / React Native 0.86.3** (New Architecture).
+`react-native-stroeer-sdk` 1.0.0-rc1 on **Expo SDK 55 / React Native 0.83.10** (New Architecture).
 
 ## Prerequisites
 
@@ -49,19 +49,19 @@ Maven repositories and SDK levels come from `expo-build-properties`.
 
 | Setting | Value | File | Why |
 | --- | --- | --- | --- |
-| Expo SDK / RN | SDK 57 (`expo ~57.0.27`), RN 0.86.3, React 19.2.3 | `package.json` | Latest template; SDK peer is RN >= 0.82.1 |
+| Expo SDK / RN | SDK 55 (`expo ~55.0.31`), RN 0.83.10, React 19.2.0 | `package.json` | Minimum Expo SDK meeting the Stroeer SDK requirement (RN >= 0.82.1); SDK 54 ships RN 0.81 |
 | `react-native-stroeer-sdk` | `https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0-rc1.tgz` | `package.json` | The SDK is distributed as a tarball, not via the npm registry |
 | `allow-remote` | `root` | `.npmrc` | npm 12+ refuses tarball URLs by default (`EALLOWREMOTE`) |
-| Extra dependencies | `expo-build-properties`, `expo-dev-client`, `react-native-safe-area-context ~5.7.0` | `package.json` | Native config, dev build, same as bare app |
+| Extra dependencies | `expo-build-properties`, `expo-dev-client`, `react-native-safe-area-context ~5.6.2` | `package.json` | Native config, dev build, same as bare app |
 | Package name | `stroeer-example-expo` | `package.json` | `create-expo-app` refuses the name `expo` |
 | App name / slug | `StroeerExampleExpo` / `stroeer-example-expo` | `app.json` | Template default was `stroeer-expo` |
 | `android.package` | `com.stroeer.example.expo` | `app.json` | Required for prebuild |
 | `ios.bundleIdentifier` | `com.stroeer.example.expo` | `app.json` | Required for prebuild |
-| New Architecture | always on (no `newArchEnabled` key) | - | SDK 57 removed the flag; the schema rejects it. The SDK requires New Arch |
+| New Architecture | always on (no `newArchEnabled` key) | - | SDK 55 has no `newArchEnabled` key in its config schema (New Architecture only). The SDK requires New Arch |
 | Maven repo | `https://stroeersdk.github.io/android/maven` | `app.json` (`expo-build-properties` `android.extraMavenRepos`) | `com.stroeer.ads` artifacts. No content filter is possible (plain URLs only), unlike the bare app's `includeGroup` |
 | Maven repo | `https://cdn.confiant-integrations.net/backend-integrations/in-app/releases/android/maven` | same | `com.confiant.android` artifacts (transitive) |
 | `android.minSdkVersion` | 26 | `app.json` | SDK requirement |
-| `ios.deploymentTarget` | 16.4 | `app.json` | SDK needs 15.1, but `expo-build-properties` rejects anything below 16.4 for RN 0.86 |
+| `ios.deploymentTarget` | 15.1 | `app.json` | Stroeer SDK minimum; also the minimum for RN 0.83 / `expo-build-properties` 55 |
 | AdMob app IDs | Android `ca-app-pub-3940256099942544~3347511713`, iOS `ca-app-pub-3940256099942544~1458002511` (Google test IDs) | `app.json` (plugin options) | Required by the Google Mobile Ads SDK. Use your own |
 | Plugins | `expo-dev-client`, `expo-build-properties`, `./plugins/withStroeerSdk` | `app.json` | See above |
 | Local config plugin | AdMob IDs + Podfile line | `plugins/withStroeerSdk.js` | Not available as an Expo built-in |
