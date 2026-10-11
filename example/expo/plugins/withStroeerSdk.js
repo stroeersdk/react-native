@@ -12,8 +12,7 @@ const {
 } = require('expo/config-plugins');
 
 const PODFILE_MARKER = '# @generated stroeer-sdk';
-const POD_LINE =
-  "pod 'StroeerSDK', :podspec => 'https://stroeersdk.github.io/iOS/cocoapods/StroeerSDK.podspec', :subspecs => ['Core']";
+const POD_LINE = "pod 'StroeerSDK', :subspecs => ['Core']";
 
 function withStroeerSdk(config, options = {}) {
   const { androidAdMobAppId, iosAdMobAppId } = options;
@@ -37,7 +36,6 @@ function withStroeerSdk(config, options = {}) {
     });
   }
 
-  // Not verified (no pod install was run for this example).
   config = withDangerousMod(config, [
     'ios',
     async cfg => {
