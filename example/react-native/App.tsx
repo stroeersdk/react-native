@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Button,
+  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -23,12 +23,11 @@ import type {
   StroeerInterstitialListeners,
   StroeerRewardedListeners,
 } from 'react-native-stroeer-sdk';
-import { useConsent } from './src/useConsent';
 import { useNotifier } from './src/useNotifier';
 
 // The slot names and the application name below are test configuration. Use your own.
 const APPLICATION_NAME = 'appTest';
-const BANNER_SLOT = 'b1'; // 'banner', 'banner2' and 'banner3' work as well
+const BANNER_SLOT = 'b2';
 const INTERSTITIAL_SLOT = 'interstitial';
 const REWARDED_SLOT = 'rewarded';
 
@@ -53,7 +52,6 @@ function App() {
 
 function Example() {
   const { events, notify } = useNotifier();
-  const consent = useConsent(notify);
 
   // The banner is rendered only after setApplicationName() resolved.
   const [sdkReady, setSdkReady] = useState(false);
@@ -166,28 +164,22 @@ function Example() {
       </View>
 
       <View style={styles.buttons}>
-        <Button
+        <ActionButton
           title="Reload Banner"
           disabled={!sdkReady}
           onPress={() => setBannerKey(key => key + 1)}
         />
-        <Button
+        <ActionButton
           title="Interstitial"
           disabled={!sdkReady || interstitial.isLoading}
           onPress={loadInterstitial}
         />
-        <Button
+        <ActionButton
           title="Rewarded"
           disabled={!sdkReady || rewarded.isLoading}
           onPress={loadRewarded}
         />
-        <Button title="Consent" disabled={!consent.available} onPress={consent.collect} />
-        <Button title="Privacy" disabled={!consent.available} onPress={consent.showPrivacy} />
-        <Button title="Remove Consent" disabled={!consent.available} onPress={consent.clear} />
       </View>
-      {!consent.available && (
-        <Text style={styles.note}>Consent module not available in this SDK build</Text>
-      )}
 
       <Text style={styles.logTitle}>Events</Text>
       {events.length === 0 && <Text style={styles.note}>No events yet</Text>}
@@ -197,6 +189,33 @@ function Example() {
         </Text>
       ))}
     </ScrollView>
+  );
+}
+
+// A filled button, so the enabled and disabled states are clearly distinguishable.
+function ActionButton({
+  title,
+  disabled,
+  onPress,
+}: {
+  title: string;
+  disabled?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.button,
+        disabled && styles.buttonDisabled,
+        pressed && styles.buttonPressed,
+      ]}
+    >
+      <Text style={[styles.buttonText, disabled && styles.buttonTextDisabled]}>{title}</Text>
+    </Pressable>
   );
 }
 
@@ -211,6 +230,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   buttons: { gap: 8 },
+  button: {
+    backgroundColor: '#007aff',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  buttonDisabled: { backgroundColor: '#c7c7cc' },
+  buttonPressed: { opacity: 0.7 },
+  buttonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+  buttonTextDisabled: { color: '#f2f2f7' },
   note: { color: '#666666', marginTop: 8 },
   logTitle: { fontSize: 16, fontWeight: '600', marginTop: 24, marginBottom: 4 },
   logLine: { fontFamily: 'Courier', fontSize: 12, color: '#222222' },

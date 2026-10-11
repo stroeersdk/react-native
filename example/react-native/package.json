@@ -13,7 +13,7 @@
     "react": "19.1.1",
     "react-native": "0.82.1",
     "react-native-safe-area-context": "^5.5.2",
-    "react-native-stroeer-sdk": "https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0-rc1.tgz"
+    "react-native-stroeer-sdk": "https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

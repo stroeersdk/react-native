@@ -17,6 +17,9 @@ end
 target 'StroeerExample' do
   config = use_native_modules!
 
+  # Native Ströer SDK used by react-native-stroeer-sdk.
+  pod 'StroeerSDK', :subspecs => ['Core', 'Consent']
+
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
@@ -30,5 +33,15 @@ target 'StroeerExample' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # fmt 11.0.2 (bundled with React Native 0.82) does not compile with the Xcode 26 clang in
+    # C++20 mode ("call to consteval function ... is not a constant expression"). Build only the
+    # fmt pod as C++17, where fmt does not use consteval.
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'fmt'
+      target.build_configurations.each do |build_config|
+        build_config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      end
+    end
   end
 end
