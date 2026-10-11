@@ -137,7 +137,6 @@ Everything changed from the Expo `blank-typescript` template:
 | Expo SDK / React Native | SDK 55 (`expo ~55.0.31`), React Native 0.83.10, React 19.2.0 | `package.json` | Minimum Expo SDK that meets the Ströer SDK requirement (React Native 0.82.1+) |
 | `react-native-stroeer-sdk` | tarball URL (see [Install](#install)) | `package.json` | The SDK is distributed as a tarball, not through the npm registry |
 | `allow-remote` | `root` | `.npmrc` | npm 12+ refuses tarball URLs by default (`EALLOWREMOTE`) |
-| Codegen root of `react-native-stroeer-sdk` | `node_modules/react-native-stroeer-sdk` | `react-native.config.js` | **Required on iOS with SDK 1.0.0**, see below |
 | Extra dependencies | `expo-build-properties`, `expo-dev-client`, `react-native-safe-area-context` | `package.json` | Native build settings, development build, safe area handling |
 | Plugins | `expo-dev-client`, `expo-build-properties`, `./plugins/withStroeerSdk` | `app.json` | See above |
 | Maven repo | `https://stroeersdk.github.io/android/maven` | `app.json` (`expo-build-properties` > `android.extraMavenRepos`) | Where the Android SDK (`com.stroeer.ads`) is published |
@@ -149,31 +148,11 @@ Everything changed from the Expo `blank-typescript` template:
 | New Architecture | always on | - | Expo SDK 55 supports only the New Architecture, which the Ströer SDK requires |
 | `StatusBar` | from `expo-status-bar` (`style="dark"`) | `App.tsx` | The only code difference from the React Native example |
 
-#### iOS banner workaround (`react-native.config.js`)
-
-With `react-native-stroeer-sdk` 1.0.0, React Native's iOS codegen cannot resolve the package, so
-the banner component is not registered and banners never load on iOS. Add this
-`react-native.config.js` to the root of your app, then run `npx expo prebuild --clean`:
-
-```js
-const path = require('path');
-
-module.exports = {
-  dependencies: {
-    'react-native-stroeer-sdk': {
-      root: path.join(__dirname, 'node_modules/react-native-stroeer-sdk'),
-    },
-  },
-};
-```
-
 ## Troubleshooting
 
 - **Expo Go fails or reports missing native modules**: use the development build
   (`npx expo run:android` / `npx expo run:ios`).
 - **Gradle cannot resolve `com.stroeer.ads`**: check `extraMavenRepos` in `app.json`, then run
-  `npx expo prebuild --clean`.
-- **Banner never loads on iOS**: check that `react-native.config.js` is present and run
   `npx expo prebuild --clean`.
 - **Changes to `app.json` have no effect**: run `npx expo prebuild --clean` to regenerate the native
   projects.

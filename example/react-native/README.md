@@ -135,34 +135,13 @@ Everything changed from the React Native 0.82.1 template. Apply the same changes
 | --- | --- | --- | --- |
 | `react-native-stroeer-sdk` | tarball URL (see [Install](#install)) | `package.json` | The SDK is distributed as a tarball, not through the npm registry |
 | `allow-remote` | `root` | `.npmrc` | npm 12+ refuses tarball URLs by default (`EALLOWREMOTE`) |
-| Codegen root of `react-native-stroeer-sdk` | `node_modules/react-native-stroeer-sdk` | `react-native.config.js` | **Required on iOS with SDK 1.0.0**, see below |
 | `@react-native/new-app-screen` | removed | `package.json` | The template welcome screen is not used |
 | Jest mock of the SDK | virtual stub module | `__tests__/App.test.tsx` | Native modules do not exist in Jest |
-
-#### iOS banner workaround (`react-native.config.js`)
-
-With `react-native-stroeer-sdk` 1.0.0, React Native's iOS codegen cannot resolve the package, so
-the banner component is not registered and banners never load on iOS. Add this
-`react-native.config.js` to the root of your app, then run `pod install` again:
-
-```js
-const path = require('path');
-
-module.exports = {
-  dependencies: {
-    'react-native-stroeer-sdk': {
-      root: path.join(__dirname, 'node_modules/react-native-stroeer-sdk'),
-    },
-  },
-};
-```
 
 ## Troubleshooting
 
 - **`Unable to open base configuration reference file '.../Pods-StroeerExample.debug.xcconfig'`**:
   `pod install` has not run, or the `.xcodeproj` was opened instead of the `.xcworkspace`.
-- **Banner never loads on iOS**: check that `react-native.config.js` is present and run
-  `pod install` again.
 - **`EALLOWREMOTE` during `npm install`**: the `.npmrc` with `allow-remote=root` is missing.
 - **Stale builds**: `../clean-build.sh react-native [android|ios]` removes `node_modules`, Pods and
   build outputs, reinstalls everything and builds the app. Run it with `--help` for the options.
