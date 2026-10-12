@@ -1,7 +1,7 @@
 # Ströer SDK Expo example
 
 An Expo app (Continuous Native Generation / `expo prebuild`) that integrates
-`react-native-stroeer-sdk` 1.0.0 on **Expo SDK 55 / React Native 0.83.10** (New Architecture).
+`react-native-stroeer-sdk` 1.0.1 on **Expo SDK 55 / React Native 0.83.10** (New Architecture).
 It shows:
 
 - a banner ad, with local and global custom targeting,
@@ -129,7 +129,7 @@ Everything changed from the Expo `blank-typescript` template:
 | Setting | Value | File | Why |
 | --- | --- | --- | --- |
 | Expo SDK / React Native | SDK 55 (`expo ~55.0.31`), React Native 0.83.10, React 19.2.0 | `package.json` | Minimum Expo SDK that meets the Ströer SDK requirement (React Native 0.82.1+) |
-| `react-native-stroeer-sdk` | `^1.0.0` | `package.json` | The Ströer SDK, from the npm registry |
+| `react-native-stroeer-sdk` | `^1.0.1` | `package.json` | The Ströer SDK, from the npm registry |
 | Extra dependencies | `expo-build-properties`, `expo-dev-client`, `react-native-safe-area-context` | `package.json` | Native build settings, development build, safe area handling |
 | Plugins | `expo-dev-client`, `expo-build-properties`, `./plugins/withStroeerSdk` | `app.json` | See above |
 | Maven repo | `https://stroeersdk.github.io/android/maven` | `app.json` (`expo-build-properties` > `android.extraMavenRepos`) | Where the Android SDK (`com.stroeer.ads`) is published |

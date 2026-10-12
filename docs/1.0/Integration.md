@@ -15,6 +15,7 @@ interstitial and rewarded. It mirrors the [Ströer SDK for Android README](https
 - [Errors](#errors)
 - [Targeting](#targeting)
 - [Debugging](#debugging)
+- [Confiant](#confiant)
 - [Migrating to 1.0](#migrating-to-10)
 - [Support](#support)
 
@@ -441,101 +442,288 @@ contents. Restart the app to leave the mode.
 > **Warning:** inspection mode is intended for ad debugging. Do not enable it in production
 > builds.
 
+## Confiant
+
+Confiant monitors the quality of the ads served through the Ströer SDK and blocks harmful ones. It
+is optional and must be activated for your app: contact your Ströer account manager to enable it
+and to get your **Confiant property ID**. Do not reuse a property ID from another app or from an
+example.
+
+Once Confiant is initialized, the SDK connects supported ads to it automatically. No code is
+needed per ad. Confiant does not monitor video ads.
+
+### 1. Android: add the Confiant module
+
+Add the Confiant Maven repository next to the Ströer repository (in a React Native project, in the
+`allprojects` repositories of `android/build.gradle`):
+
+```groovy
+maven {
+    url 'https://cdn.confiant-integrations.net/backend-integrations/in-app/releases/android/maven'
+    content {
+        includeGroup 'com.confiant.android'
+    }
+}
+```
+
+Add the Ströer Confiant module and the Confiant SDK to `android/app/build.gradle`:
+
+```groovy
+dependencies {
+    implementation 'com.stroeer.ads:confiant:1.0.0'
+    implementation 'com.confiant.android:sdk:6.1.4'
+}
+```
+
+Use the same version for `com.stroeer.ads:confiant` as the Ströer Android SDK used by
+`react-native-stroeer-sdk`.
+
+### 2. iOS: use the Confiant-enabled podspec
+
+The Confiant SDK is not on the CocoaPods trunk. Add the Confiant source at the top of
+`ios/Podfile`, and install `StroeerSDK` from the Confiant-enabled podspec in the app target:
+
+```ruby
+source 'https://cdn.cocoapods.org/'
+source 'https://cdn.confiant-integrations.net/backend-integrations/in-app/releases/ios/podspecs.git'
+
+target 'YourApp' do
+  pod 'StroeerSDK',
+      :podspec => 'https://stroeersdk.github.io/iOS/cocoapods/1.0.0/StroeerSDK-Confiant.podspec',
+      :subspecs => ['Core', 'Confiant']
+  # ...
+end
+```
+
+Then run `cd ios && pod install`.
+
+- Declare `StroeerSDK` only once. If you also use the SDK's consent module, add `'Consent'` to the
+  same `:subspecs` list instead of adding a second `pod 'StroeerSDK'` line.
+- Confiant requires the `-ObjC` linker flag. CocoaPods already adds it for React Native apps; keep
+  `$(inherited)` in **Build Settings → Other Linker Flags** of the app target.
+- **Expo:** apply these changes with a config plugin. The example's
+  [`withStroeerSdk`](../../example/expo/plugins/withStroeerSdk.js) plugin adds a plain
+  `pod 'StroeerSDK'` line: replace it with the Confiant-enabled declaration above, and add the
+  Confiant `source`.
+
+### 3. Initialize Confiant
+
+Initialize Confiant once, after `setApplicationName`:
+
+```tsx
+import { useEffect } from 'react';
+import { StroeerConfiant, StroeerSDK } from 'react-native-stroeer-sdk';
+
+export default function App() {
+  useEffect(() => {
+    (async () => {
+      try {
+        await StroeerSDK.setApplicationName('APPLICATION_NAME');
+        const running = await StroeerConfiant.initialize('CONFIANT_PROPERTY_ID', false);
+        if (!running) {
+          // Confiant is not available or not activated for this app. Ads still load.
+        }
+      } catch (error) {
+        console.warn('Ströer SDK setup failed', error.code, error.message);
+      }
+    })();
+  }, []);
+
+  // ...
+}
+```
+
+`initialize(confiantPropertyId, enableReload)` resolves `true` when Confiant is running and
+`false` when it is not available or not activated. The result is kept: later calls resolve the
+same value. It rejects with:
+
+| Code                   | Meaning |
+|------------------------|---------|
+| `INVALID_ARGUMENT`     | The property ID is blank. |
+| `ALREADY_INITIALIZING` | `initialize` was called again while the first call is still running. |
+| `INIT_TIMEOUT`         | Confiant did not report a result in time. |
+| `INIT_FAILED`          | The native Confiant initialization failed. |
+| `MODULE_UNAVAILABLE`   | The native module of the bridge is missing. |
+
+**`enableReload`:** pass `false`. Automatic reloading of blocked ads is currently disabled on
+Android because it can crash the app. When it is supported, `true` reloads a blocked ad up to two
+times and `false` leaves the slot empty. Use another value only if Ströer tells you to.
+
+### 4. Test mode
+
+Test mode makes Confiant block every ad, so you can check that the integration works. Call
+`enableTestMode()` **before** `initialize`; a later call is ignored.
+
+```ts
+if (__DEV__) {
+  StroeerConfiant.enableTestMode();
+}
+const running = await StroeerConfiant.initialize('CONFIANT_PROPERTY_ID', false);
+```
+
+> **Warning:** never enable test mode in production builds.
+
+### Troubleshooting
+
+- **`initialize` resolves `false`:** check that the native Confiant dependency is installed
+  (`com.stroeer.ads:confiant` on Android, the `Confiant` subspec on iOS), that Confiant is activated
+  for your app, and that the property ID belongs to this app.
+- **`pod install` cannot resolve `ConfiantSDK`:** the Confiant `source` is missing from the
+  `Podfile`, or `StroeerSDK` is not installed from the Confiant-enabled podspec.
+- **Gradle cannot resolve `com.confiant.android:sdk`:** the Confiant Maven repository is missing.
+- **Every ad is blocked:** test mode is enabled.
+
 ## Migrating to 1.0
 
-Version 1.0 is a rebrand to StröerSDK and a rewrite of the React Native bridge for the New
-Architecture. Update your project in this order.
+`react-native-stroeer-sdk` 1.0.1 replaces `react-native-yieldlove` 4.3.1. The version number
+restarts at 1.0 together with the native StröerSDK. React Native 0.82.1 and the New Architecture
+are still required, as in 4.3.x.
 
-### 1. Requirements
-
-- React Native 0.82.1 or later. The New Architecture is required; the legacy architecture is no
-  longer supported.
-- Check the other versions in [Requirements](#requirements).
-
-### 2. Package
-
-The package is published on the npm registry. If your `package.json` installs it from a tarball URL
-(for example a `1.0.0-rc` build), replace that entry:
+### 1. Replace the package
 
 ```bash
+npm uninstall react-native-yieldlove
 npm install react-native-stroeer-sdk
 ```
 
-You can then remove `allow-remote=root` from your `.npmrc` if no other dependency needs it.
+Update your imports:
 
-### 3. Native setup
-
-- **Android:** the SDK is now published under `com.stroeer.ads`. Use the Ströer Maven repository
-  from [Installation](#2-android-add-the-sdk-repository) and remove repositories you only added for
-  the previous SDK. Jetifier is no longer required by the SDK.
-- **iOS:** the native SDK is now the `StroeerSDK` pod, which replaces `YieldloveAdIntegration`.
-  Remove any `YieldloveAdIntegration` line from your `Podfile`, then run `pod install`.
-
-### 4. API changes
-
-**StroeerSDK**
-
-| Before | 1.0 |
-|--------|-----|
-| `setUserTargeting`, `setContextTargeting`, `setContextDataTargeting`, `setCustomTargeting` | `setGlobalCustomTargeting({ user: [...], context: [...], <key>: [...] })` |
-| `setApplicationName`, `clearConfigurationCache` (no result) | Return a Promise |
-| `getSlotNames` resolves `null` without a configuration | Rejects with `CONFIG_NOT_LOADED` |
-| `getConfiguration` | Resolves `null` when no configuration is loaded |
-
-```ts
-await StroeerSDK.setApplicationName('APPLICATION_NAME');
-
-StroeerSDK.setGlobalCustomTargeting({
-  user: ['sports', 'technology'],
-  context: ['sport', 'game'],
-  section: ['soccer'],
-});
+```diff
+- import { StroeerSDK, StroeerBannerAd } from 'react-native-yieldlove';
++ import { StroeerSDK, StroeerBannerAd } from 'react-native-stroeer-sdk';
 ```
 
-Global targeting values are lists of strings, and keys are merged: setting one key does not remove
-the others. See [Targeting](#targeting).
+### 2. Update the native setup
 
-**Banner (`StroeerBannerAd`)**
+- **Android:** replace the Yieldlove Maven repository (`slabs-yieldlove-ad-integration.s3...`,
+  group `com.yieldlove.adIntegration`) with the Ströer repository from
+  [Installation](#2-android-add-the-sdk-repository) (group `com.stroeer.ads`). If you declared
+  Yieldlove artifacts yourself, replace them: `com.yieldlove.adIntegration:yieldlove` becomes
+  `com.stroeer.ads:core`, and `com.yieldlove.adIntegration:confiant` becomes
+  `com.stroeer.ads:confiant`. Jetifier is no longer required.
+- **iOS:** the `StroeerSDK` pod replaces `YieldloveAdIntegration`. Remove any
+  `YieldloveAdIntegration` entries from your `Podfile`, then run `pod install --repo-update`.
+- Rebuild the native app. A JS reload is not enough.
 
-- Loading is driven by props. The banner reloads when `publisherSlotName`, `contentUrl` or
-  `customTargeting` change in value. To force a reload, change the React `key`.
-- The `destroyWhenDetached` prop is removed.
-- `onAdFailedToLoad` receives `{ code, message }`.
+### 3. SDK configuration and targeting
 
-Keep `customTargeting` stable (define it outside the component or memoize it), or the banner
-reloads on every render.
+```diff
+- StroeerSDK.setApplicationName('your-app-name');
++ await StroeerSDK.setApplicationName('your-app-name');
 
-**Interstitial and rewarded**
+- StroeerSDK.setUserTargeting(['sports', 'technology']);
+- StroeerSDK.setContextTargeting(['sport', 'game']);
+- StroeerSDK.setCustomTargeting({ section: ['soccer'] });
++ StroeerSDK.setGlobalCustomTargeting({
++   user: ['sports', 'technology'],
++   context: ['sport', 'game'],
++   section: ['soccer'],
++ });
 
-- `setLoadAfterReady`, `setListeners` and `removeAllListeners` are removed.
-- `useStroeerInterstitial` / `useStroeerRewarded` and the `StroeerInterstitialAd` /
-  `StroeerRewardedAd` components are kept and use the new API. They are the simplest migration
-  path: see [Interstitial](#interstitial) and [Rewarded](#rewarded).
-- For full control, use an ad handle: `create` → `subscribe` → `load` → `show` → `destroy`. See
-  [Low-level handle](#low-level-handle).
-- Ads no longer show automatically after loading: call `show()` yourself, for example in
+- const slots = await StroeerSDK.reloadConfigurationAndGetSlotNames('your-app-name');
++ const slots = await StroeerSDK.resetAndLoadConfiguration('your-app-name');
+```
+
+- `setContextDataTargeting(...)` keys also move into `setGlobalCustomTargeting`.
+- `clearConfigurationCache()` returns a Promise. On Android it no longer clears the app's default
+  shared preferences, so consent is kept.
+- `getSlotNames()` rejects with `CONFIG_NOT_LOADED` instead of resolving `null`: wrap it in
+  `try`/`catch` instead of checking for `null`. `getConfiguration()` resolves `null` when no
+  configuration is loaded.
+
+### 4. Banner
+
+```diff
+  <StroeerBannerAd
+    publisherSlotName="banner_slot"
+-   destroyWhenDetached={false}
+  />
+```
+
+- Remove `destroyWhenDetached`. The banner is destroyed when it unmounts.
+- `onAdFailedToLoad` still receives `message`, so existing handlers keep working. It now also
+  receives an error `code`.
+- The banner reloads when `publisherSlotName`, `contentUrl` or `customTargeting` change in value.
+  To force a reload, change the React `key`. Keep `customTargeting` stable (define it outside the
+  component or memoize it), or the banner reloads on every render.
+- `onAdImpression` receives the same `{ width, height, publisherSlotName, source }` payload as
   `onAdLoaded`.
-- Several ads can be loaded at the same time. Each hook, component and handle owns its own ad and
-  listeners.
 
-**StroeerIdentity**
+### 5. Interstitial and rewarded
 
-| Before | 1.0 |
-|--------|-----|
-| `setEmail`, `setPhone`, `setPuid`, `setRegionCode`, `setCityCode`, then `apply` | `setCustomInfo({ email, phone, puid, regionCode, cityCode })` |
+`StroeerInterstitial` and `StroeerRewarded` used to be single shared objects. They now create ad
+handles. `setLoadAfterReady`, `setListeners` and `removeAllListeners` are removed, and ads never
+show automatically after loading.
 
-Every field of `setCustomInfo` is optional.
+```diff
+- StroeerInterstitial.setListeners({ onAdDismissed: () => {} });
+- await StroeerInterstitial.load('interstitial_slot');
+- await StroeerInterstitial.show();
+- StroeerInterstitial.removeAllListeners();
++ const ad = await StroeerInterstitial.create('interstitial_slot');
++ const sub = ad.subscribe({ onAdDismissed: () => {} });
++ await ad.load();
++ await ad.show();
++ sub.remove();
++ await ad.destroy();
+```
 
-**StroeerConfiant**
+- A handle loads once and shows once. Create a new handle for the next ad, and always call
+  `destroy()`. See [Low-level handle](#low-level-handle).
+- `onAdFailedToLoad` and `onAdFailedToShow` receive `{ code, message }` instead of a string:
 
-`initialize` resolves only once. A second call while it is running rejects with
-`ALREADY_INITIALIZING`.
+  ```diff
+  - onAdFailedToLoad: (error) => console.warn(error),
+  + onAdFailedToLoad: ({ code, message }) => console.warn(code, message),
+  ```
+- The hooks take listeners as an optional second argument. `checkReady()` is replaced by
+  `isReady()` (or `isLoaded`), and `load()` always creates a fresh ad:
 
-### 5. Errors
+  ```diff
+  - const ad = useStroeerInterstitial('interstitial_slot');
+  + const ad = useStroeerInterstitial('interstitial_slot', { onAdDismissed: () => {} });
+  ```
+- `StroeerInterstitialAd` and `StroeerRewardedAd` keep their props (`autoLoad`, `autoShow`,
+  listeners) and can also be controlled through a ref (`load`, `show`, `isReady`). Several
+  components and hooks can coexist without replacing each other's listeners.
+- Rewarded: deliver rewards from `onUserEarnedReward`, which can fire after `onAdDismissed`. Keep
+  the handle alive until then.
 
-Rejected promises and failure events now carry `{ code, message }`. A missing native module is
-reported with the code `MODULE_UNAVAILABLE`. Update error handling that reads other fields or
-compares error strings. See [Errors](#errors) for all codes.
+### 6. Identity
+
+The per-field setters and `apply()` are replaced by one `setCustomInfo` call:
+
+```diff
+- StroeerIdentity.setEmail('user@example.com');
+- StroeerIdentity.setPhone('+49301234567');
+- StroeerIdentity.setPuid('user-1234');
+- StroeerIdentity.setRegionCode(regionCode);
+- StroeerIdentity.setCityCode(cityCode);
+- StroeerIdentity.apply();
++ StroeerIdentity.setCustomInfo({
++   email: 'user@example.com',
++   phone: '+49301234567',
++   puid: 'user-1234',
++   regionCode,
++   cityCode,
++ });
+```
+
+Pass only the fields you have. Every `setCustomInfo` call is applied at once, and values that were
+already applied are kept when a later call leaves them out.
+
+### 7. Confiant
+
+The `initialize(propertyId, enableReload)` signature is unchanged. It now settles only once: a
+second call while the first one runs rejects with `ALREADY_INITIALIZING`. See [Confiant](#confiant)
+for the native setup.
+
+### 8. Errors and test tooling
+
+- All rejections and failure events are `{ code, message }`. A missing native module rejects with
+  `MODULE_UNAVAILABLE` instead of a generic error. See [Errors](#errors).
+- `IabTestConsent` is no longer exported. It was test tooling: write test consent in your app
+  instead.
 
 For the complete list of changes, see the [release notes](../ReleaseNotes.md).
 

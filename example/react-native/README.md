@@ -1,6 +1,6 @@
 # Ströer SDK React Native example
 
-A React Native 0.82.1 (New Architecture) app that integrates `react-native-stroeer-sdk` 1.0.0 on
+A React Native 0.82.1 (New Architecture) app that integrates `react-native-stroeer-sdk` 1.0.1 on
 Android and iOS. It shows:
 
 - a banner ad, with local and global custom targeting,
@@ -129,7 +129,7 @@ Everything changed from the React Native 0.82.1 template. Apply the same changes
 
 | Setting | Value | File | Why |
 | --- | --- | --- | --- |
-| `react-native-stroeer-sdk` | `^1.0.0` | `package.json` | The Ströer SDK, from the npm registry |
+| `react-native-stroeer-sdk` | `^1.0.1` | `package.json` | The Ströer SDK, from the npm registry |
 | `@react-native/new-app-screen` | removed | `package.json` | The template welcome screen is not used |
 | Jest mock of the SDK | virtual stub module | `__tests__/App.test.tsx` | Native modules do not exist in Jest |
 

@@ -4,7 +4,7 @@ The Ströer SDK helps publishers integrate banner, interstitial, and rewarded ad
 
 npm package: `react-native-stroeer-sdk`
 
-### Release Notes [1.0.0] (12.Oct.2026)
+### Release Notes [1.0.1] (12.Oct.2026)
 
 #### New
 - Rebranded the SDK as StröerSDK.
@@ -45,6 +45,7 @@ npm package: `react-native-stroeer-sdk`
   - SourcePoint: 7.15.13
   - Google Mobile Ads SDK: 24.6.0 (publishers can upgrade to a later version)
   - Kotlin: 2.1.0 (publishers can upgrade to a later version)
+- The iOS native SDK is now the `StroeerSDK` pod (1.0.0), which replaces `YieldloveAdIntegration`. It is installed from CocoaPods trunk with the subspecs `Core` (default) and `Consent`; the Confiant variant comes from `https://stroeersdk.github.io/iOS/cocoapods/1.0.0/StroeerSDK-Confiant.podspec`. (iOS)
 - Updated third-party library versions (iOS):
   - Prebid Mobile: 3.4.1
   - Google Mobile Ads SDK: 13.7.0

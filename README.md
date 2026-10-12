@@ -7,7 +7,7 @@ npm package: `react-native-stroeer-sdk`
 
 ## Release notes
 
-### 1.0.0 (07.Oct.2026)
+### 1.0.1 (12.Oct.2026)
 
 #### Highlights
 - SDK rebranded as StröerSDK.
