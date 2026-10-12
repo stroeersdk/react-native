@@ -97,11 +97,6 @@ ad is loading. Every ad callback is written to the **Events** log below the butt
 | Event log and toasts | `src/useNotifier.ts` |
 | Native configuration | `app.json`, `plugins/withStroeerSdk.js` |
 
-## Consent
-
-Consent management (Consent / Privacy / Remove Consent) is not part of this example yet and will be
-added in a later version. `src/useConsent.ts` is kept for that purpose but is not used by the app.
-
 ## Debug panel
 
 In debug builds (`__DEV__`) the app calls `enableDebugMode()` and `enableInspectionMode()`, after
