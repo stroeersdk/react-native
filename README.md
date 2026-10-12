@@ -96,24 +96,26 @@ repositories {
 }
 ```
 
-### 3. iOS: add the SDK pod
+### 3. iOS: install the pods
 
-The bridge depends on the `StroeerSDK` pod, which is not on the CocoaPods trunk. Declare it in the
-app target of your `ios/Podfile`:
-
-```ruby
-pod 'StroeerSDK', :podspec => 'https://stroeersdk.github.io/iOS/CocoaPods/StroeerSDK.podspec'
-```
-
-The default `Core` subspec is all the bridge needs. If your app uses the native consent
-management (CMP), add the `Consent` subspec:
-`:subspecs => ['Core', 'Consent']`.
-
-Then install the pods:
+The bridge depends on the native `StroeerSDK` pod, which is published on the CocoaPods trunk.
+`pod install` adds it automatically; no `Podfile` change is needed:
 
 ```bash
 cd ios && pod install
 ```
+
+The default `Core` subspec is all the bridge needs. If your app uses the native consent
+management (CMP), add the `Consent` subspec to the app target of your `ios/Podfile`:
+
+```ruby
+pod 'StroeerSDK', :subspecs => ['Core', 'Consent']
+```
+
+If your `Podfile` installs `StroeerSDK` with a `:podspec` URL, remove that option so the pod comes
+from the trunk. The podspec of each version is also published at
+`https://stroeersdk.github.io/iOS/cocoapods/<version>/StroeerSDK.podspec`, for example
+[1.0.0](https://stroeersdk.github.io/iOS/cocoapods/1.0.0/StroeerSDK.podspec).
 
 Autolinking adds the native modules on both platforms; no manual linking is needed.
 
