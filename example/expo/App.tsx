@@ -26,8 +26,8 @@ import type {
 import { useNotifier } from './src/useNotifier';
 
 // The slot names and the application name below are test configuration. Use your own.
-const APPLICATION_NAME = 'appTest';
-const BANNER_SLOT = 'b2';
+const APPLICATION_NAME = 'sport1';
+const BANNER_SLOT = 'bTeaser';
 const INTERSTITIAL_SLOT = 'interstitial';
 const REWARDED_SLOT = 'rewarded';
 

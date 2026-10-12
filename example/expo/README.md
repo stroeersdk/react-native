@@ -32,13 +32,12 @@ include. Use a development build: this project includes `expo-dev-client`, so
 ## Install
 
 ```sh
+npm install react-native-stroeer-sdk
 npm install
 ```
 
-The SDK is installed from its tarball URL,
-https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0.tgz. npm 12 and
-later refuse tarball URLs by default (`EALLOWREMOTE`), so this project has a `.npmrc` with
-`allow-remote=root`, which allows URLs declared in this project's own `package.json`.
+The SDK is installed from the npm registry
+([`react-native-stroeer-sdk`](https://www.npmjs.com/package/react-native-stroeer-sdk)).
 
 ## Run on Android
 
@@ -135,8 +134,7 @@ Everything changed from the Expo `blank-typescript` template:
 | Setting | Value | File | Why |
 | --- | --- | --- | --- |
 | Expo SDK / React Native | SDK 55 (`expo ~55.0.31`), React Native 0.83.10, React 19.2.0 | `package.json` | Minimum Expo SDK that meets the Ströer SDK requirement (React Native 0.82.1+) |
-| `react-native-stroeer-sdk` | tarball URL (see [Install](#install)) | `package.json` | The SDK is distributed as a tarball, not through the npm registry |
-| `allow-remote` | `root` | `.npmrc` | npm 12+ refuses tarball URLs by default (`EALLOWREMOTE`) |
+| `react-native-stroeer-sdk` | `^1.0.0` | `package.json` | The Ströer SDK, from the npm registry |
 | Extra dependencies | `expo-build-properties`, `expo-dev-client`, `react-native-safe-area-context` | `package.json` | Native build settings, development build, safe area handling |
 | Plugins | `expo-dev-client`, `expo-build-properties`, `./plugins/withStroeerSdk` | `app.json` | See above |
 | Maven repo | `https://stroeersdk.github.io/android/maven` | `app.json` (`expo-build-properties` > `android.extraMavenRepos`) | Where the Android SDK (`com.stroeer.ads`) is published |
@@ -159,6 +157,5 @@ Everything changed from the Expo `blank-typescript` template:
 - **"AsyncStorage is null" or another app's code appears**: another Metro server is running on port
   8081. Stop it or use another port: `npx expo run:android --port 8082`, or
   `npx expo start --dev-client --port 8082`.
-- **`EALLOWREMOTE` during `npm install`**: the `.npmrc` with `allow-remote=root` is missing.
 - **Stale builds**: `../clean-build.sh expo [android|ios]` removes `node_modules` and the generated
   native projects, regenerates them and builds the app. Run it with `--help` for the options.
