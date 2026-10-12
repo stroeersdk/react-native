@@ -4,15 +4,13 @@ The Ströer SDK helps publishers integrate banner, interstitial, and rewarded ad
 
 npm package: `react-native-stroeer-sdk`
 
-### Release Notes [1.0.0] (07.Oct.2026)
+### Release Notes [1.0.0] (12.Oct.2026)
 
-#### Highlights
+#### New
 - Rebranded the SDK as StröerSDK.
 - Introduced async/await support for fullscreen ads. (iOS)
 - Enhanced Direct Rendering with HTML iframe and inline autoplay video support. (iOS)
 - Improved global and configuration-level targeting, including Prebid impression targeting. (iOS)
-
-#### New
 - Changed the package name to `com.stroeer.ads`. (Android)
 - Updated the library repository: GitHub – StröerSDK Android. (Android)
 - Added a Jetpack Compose wrapper (`com.stroeer.compose`). (Android)
