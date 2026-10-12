@@ -25,10 +25,9 @@ An Expo (prebuild) version of this app lives in [`../expo`](../expo/README.md).
 npm install
 ```
 
-The SDK is installed from its tarball URL,
-https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0.tgz. npm 12 and
-later refuse tarball URLs by default (`EALLOWREMOTE`), so this project has a `.npmrc` with
-`allow-remote=root`, which allows URLs declared in this project's own `package.json`.
+The SDK is installed from the npm registry
+([`react-native-stroeer-sdk`](https://www.npmjs.com/package/react-native-stroeer-sdk)). To add it
+to your own app, run `npm install react-native-stroeer-sdk`.
 
 ## Run on Android
 
@@ -133,8 +132,7 @@ Everything changed from the React Native 0.82.1 template. Apply the same changes
 
 | Setting | Value | File | Why |
 | --- | --- | --- | --- |
-| `react-native-stroeer-sdk` | tarball URL (see [Install](#install)) | `package.json` | The SDK is distributed as a tarball, not through the npm registry |
-| `allow-remote` | `root` | `.npmrc` | npm 12+ refuses tarball URLs by default (`EALLOWREMOTE`) |
+| `react-native-stroeer-sdk` | `^1.0.0` | `package.json` | The Ströer SDK, from the npm registry |
 | `@react-native/new-app-screen` | removed | `package.json` | The template welcome screen is not used |
 | Jest mock of the SDK | virtual stub module | `__tests__/App.test.tsx` | Native modules do not exist in Jest |
 
@@ -142,6 +140,5 @@ Everything changed from the React Native 0.82.1 template. Apply the same changes
 
 - **`Unable to open base configuration reference file '.../Pods-StroeerExample.debug.xcconfig'`**:
   `pod install` has not run, or the `.xcodeproj` was opened instead of the `.xcworkspace`.
-- **`EALLOWREMOTE` during `npm install`**: the `.npmrc` with `allow-remote=root` is missing.
 - **Stale builds**: `../clean-build.sh react-native [android|ios]` removes `node_modules`, Pods and
   build outputs, reinstalls everything and builds the app. Run it with `--help` for the options.
