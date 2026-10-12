@@ -9,8 +9,13 @@ npm package: `react-native-stroeer-sdk`
 
 ### 1.0.0 (07.Oct.2026)
 
-#### New
+#### Highlights
 - SDK rebranded as StröerSDK.
+- Async/await support for fullscreen ads. (iOS)
+- Direct Rendering supports HTML iframes and inline autoplay video. (iOS)
+- Improved global and configuration-level targeting, including Prebid impression targeting. (iOS)
+
+#### New
 - The bridge is built for the New Architecture only (React Native 0.82): every module is a codegen
   TurboModule and the banner is a Fabric component.
 - Interstitial and rewarded ads are ad handles (`create` → `load` → `show` → `destroy`), with hooks
@@ -22,6 +27,8 @@ npm package: `react-native-stroeer-sdk`
 - Interstitial and rewarded ads no longer show automatically after loading.
 - `clearConfigurationCache()` no longer clears the app's default shared preferences (including
   consent).
+- Publishers can include their own app-level privacy manifest: the SDK's privacy manifest no longer
+  conflicts with it. (iOS)
 
 #### Changed
 - Errors are reported as `{ code, message }`.

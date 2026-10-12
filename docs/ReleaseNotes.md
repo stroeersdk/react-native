@@ -6,8 +6,13 @@ npm package: `react-native-stroeer-sdk`
 
 ### Release Notes [1.0.0] (07.Oct.2026)
 
-#### New
+#### Highlights
 - Rebranded the SDK as StröerSDK.
+- Introduced async/await support for fullscreen ads. (iOS)
+- Enhanced Direct Rendering with HTML iframe and inline autoplay video support. (iOS)
+- Improved global and configuration-level targeting, including Prebid impression targeting. (iOS)
+
+#### New
 - Changed the package name to `com.stroeer.ads`. (Android)
 - Updated the library repository: GitHub – StröerSDK Android. (Android)
 - Added a Jetpack Compose wrapper (`com.stroeer.compose`). (Android)
@@ -26,6 +31,11 @@ npm package: `react-native-stroeer-sdk`
 - `clearConfigurationCache()` no longer clears the app's default shared preferences (including consent); it now only requests a fresh configuration.
 - User and context targeting is now sent to Prebid in the correct place; GAM receives the same key-values as before.
 - Release JS bundling of the example app works again in the monorepo.
+- Resolved the privacy manifest resource conflict reported by t-online, allowing publishers to include their own app-level privacy manifests. (iOS)
+- Improved configuration management with synchronized state access. (iOS)
+- Synchronized identity management and ID5 request-building state. (iOS)
+- Fixed country code fallback handling for deprecated carrier APIs. (iOS)
+- Fixed premature Direct Rendering success callbacks before HTML content finished rendering. (iOS)
 - Fixed various minor bugs.
 
 #### Changed
@@ -37,6 +47,9 @@ npm package: `react-native-stroeer-sdk`
   - SourcePoint: 7.15.13
   - Google Mobile Ads SDK: 24.6.0 (publishers can upgrade to a later version)
   - Kotlin: 2.1.0 (publishers can upgrade to a later version)
+- Updated third-party library versions (iOS):
+  - Prebid Mobile: 3.4.1
+  - Google Mobile Ads SDK: 13.7.0
 - Errors are now reported as `{ code, message }`. A missing native module is reported with the code `MODULE_UNAVAILABLE`.
 - Jetifier is no longer required. (Android)
 
