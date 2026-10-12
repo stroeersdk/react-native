@@ -10,7 +10,8 @@ Android and iOS. It shows:
 The app runs out of the box with a Ströer test configuration. Use it as a reference for your own
 integration; the full API is described in the [integration manual](../../docs/1.0/Integration.md).
 
-An Expo (prebuild) version of this app lives in [`../expo`](../expo/README.md).
+An Expo (prebuild) version of this app lives in [`../expo`](../expo/README.md). Upgrading from an
+earlier version of the SDK? See [Migrating to 1.0](../../docs/1.0/Integration.md#migrating-to-10).
 
 ## Requirements
 
@@ -89,11 +90,7 @@ rewarded ad is loading. Every ad callback is written to the **Events** log below
 | Banner with local targeting and listeners | `App.tsx`, `<StroeerBannerAd>` |
 | Interstitial and rewarded ads | `App.tsx`, `useStroeerInterstitial` / `useStroeerRewarded` |
 | Event log and toasts | `src/useNotifier.ts` |
-
-## Consent
-
-Consent management (Consent / Privacy / Remove Consent) is not part of this example yet and will be
-added in a later version. `src/useConsent.ts` is kept for that purpose but is not used by the app.
+| Buttons (enabled / disabled styling) | `App.tsx`, `ActionButton` |
 
 ## Debug panel
 
@@ -136,9 +133,25 @@ Everything changed from the React Native 0.82.1 template. Apply the same changes
 | `@react-native/new-app-screen` | removed | `package.json` | The template welcome screen is not used |
 | Jest mock of the SDK | virtual stub module | `__tests__/App.test.tsx` | Native modules do not exist in Jest |
 
+## Tests and lint
+
+```sh
+npm test             # Jest, with the SDK replaced by a stub (__tests__/App.test.tsx)
+npm run lint         # ESLint
+```
+
+After `pod install` or an iOS build, Jest also picks up third-party `*.spec.js` files in
+`ios/Pods` and `ios/build`, and reports them as failed. Only `__tests__/App.test.tsx` belongs to
+this app: run `npx jest __tests__` to test only the app.
+
 ## Troubleshooting
 
 - **`Unable to open base configuration reference file '.../Pods-StroeerExample.debug.xcconfig'`**:
   `pod install` has not run, or the `.xcodeproj` was opened instead of the `.xcworkspace`.
+- **`npm install` reports `Registry request failed with HTTP 404`**: a security wrapper around npm
+  (for example [npq](https://github.com/lirantal/npq)) rejected the package, often because it is
+  new and has no download statistics yet. The package itself is available: check with
+  `npm view react-native-stroeer-sdk version`, then install with the plain npm binary
+  (`command npm install`).
 - **Stale builds**: `../clean-build.sh react-native [android|ios]` removes `node_modules`, Pods and
   build outputs, reinstalls everything and builds the app. Run it with `--help` for the options.

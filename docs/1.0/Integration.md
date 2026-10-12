@@ -15,6 +15,7 @@ interstitial and rewarded. It mirrors the [Ströer SDK for Android README](https
 - [Errors](#errors)
 - [Targeting](#targeting)
 - [Debugging](#debugging)
+- [Migrating to 1.0](#migrating-to-10)
 - [Support](#support)
 
 ## Requirements
@@ -439,6 +440,109 @@ contents. Restart the app to leave the mode.
 
 > **Warning:** inspection mode is intended for ad debugging. Do not enable it in production
 > builds.
+
+## Migrating to 1.0
+
+Version 1.0 is a rebrand to StröerSDK and a rewrite of the React Native bridge for the New
+Architecture. Update your project in this order.
+
+### 1. Requirements
+
+- React Native 0.82.1 or later. The New Architecture is required; the legacy architecture is no
+  longer supported.
+- Check the other versions in [Requirements](#requirements).
+
+### 2. Package
+
+The package is published on the npm registry. If your `package.json` installs it from a tarball URL
+(for example a `1.0.0-rc` build), replace that entry:
+
+```bash
+npm install react-native-stroeer-sdk
+```
+
+You can then remove `allow-remote=root` from your `.npmrc` if no other dependency needs it.
+
+### 3. Native setup
+
+- **Android:** the SDK is now published under `com.stroeer.ads`. Use the Ströer Maven repository
+  from [Installation](#2-android-add-the-sdk-repository) and remove repositories you only added for
+  the previous SDK. Jetifier is no longer required by the SDK.
+- **iOS:** the native SDK is now the `StroeerSDK` pod, which replaces `YieldloveAdIntegration`.
+  Remove any `YieldloveAdIntegration` line from your `Podfile`, then run `pod install`.
+
+### 4. API changes
+
+**StroeerSDK**
+
+| Before | 1.0 |
+|--------|-----|
+| `setUserTargeting`, `setContextTargeting`, `setContextDataTargeting`, `setCustomTargeting` | `setGlobalCustomTargeting({ user: [...], context: [...], <key>: [...] })` |
+| `reloadConfigurationAndGetSlotNames` | `resetAndLoadConfiguration(applicationName)` |
+| `setApplicationName`, `clearConfigurationCache` (no result) | Return a Promise |
+| `getSlotNames` resolves `null` without a configuration | Rejects with `CONFIG_NOT_LOADED` |
+| `getConfiguration` | Resolves `null` when no configuration is loaded |
+
+```ts
+await StroeerSDK.setApplicationName('APPLICATION_NAME');
+
+StroeerSDK.setGlobalCustomTargeting({
+  user: ['sports', 'technology'],
+  context: ['sport', 'game'],
+  section: ['soccer'],
+});
+```
+
+Global targeting values are lists of strings, and keys are merged: setting one key does not remove
+the others. See [Targeting](#targeting).
+
+**Banner (`StroeerBannerAd`)**
+
+- Loading is driven by props. The banner reloads when `publisherSlotName`, `contentUrl` or
+  `customTargeting` change in value. To force a reload, change the React `key`.
+- The `destroyWhenDetached` prop is removed.
+- `onAdFailedToLoad` receives `{ code, message }`.
+
+Keep `customTargeting` stable (define it outside the component or memoize it), or the banner
+reloads on every render.
+
+**Interstitial and rewarded**
+
+- `setLoadAfterReady`, `setListeners` and `removeAllListeners` are removed.
+- `useStroeerInterstitial` / `useStroeerRewarded` and the `StroeerInterstitialAd` /
+  `StroeerRewardedAd` components are kept and use the new API. They are the simplest migration
+  path: see [Interstitial](#interstitial) and [Rewarded](#rewarded).
+- For full control, use an ad handle: `create` → `subscribe` → `load` → `show` → `destroy`. See
+  [Low-level handle](#low-level-handle).
+- Ads no longer show automatically after loading: call `show()` yourself, for example in
+  `onAdLoaded`.
+- Several ads can be loaded at the same time. Each hook, component and handle owns its own ad and
+  listeners.
+
+**StroeerIdentity**
+
+| Before | 1.0 |
+|--------|-----|
+| `setEmail`, `setPhone`, `setPuid`, `setRegionCode`, `setCityCode`, then `apply` | `setCustomInfo({ email, phone, puid, regionCode, cityCode })` |
+
+Every field of `setCustomInfo` is optional.
+
+**StroeerConfiant**
+
+`initialize` resolves only once. A second call while it is running rejects with
+`ALREADY_INITIALIZING`.
+
+**IabTestConsent**
+
+Removed from the library. It was test tooling.
+
+### 5. Errors
+
+Rejected promises and failure events now carry `{ code, message }`. A missing native module is
+reported with the code `MODULE_UNAVAILABLE`. Update error handling that reads other fields or
+compares error strings. See [Errors](#errors) for all codes.
+
+For the complete list of changes, see the [release notes](../ReleaseNotes.md).
 
 ## Support
 

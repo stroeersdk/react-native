@@ -65,26 +65,20 @@ start: `com.google.android.gms.ads.APPLICATION_ID` in `AndroidManifest.xml` and
 
 ### 1. Add the package
 
-The package is distributed as a tarball from this repository, not through the npm registry.
+The package is published on the npm registry as
+[`react-native-stroeer-sdk`](https://www.npmjs.com/package/react-native-stroeer-sdk).
 
-**npm:** npm 12 and later refuse tarball URLs by default (`EALLOWREMOTE`). Allow the URLs declared
-in your own `package.json` by adding this line to the `.npmrc` in your project root:
-
-```ini
-allow-remote=root
-```
+**npm:**
 
 ```bash
-npm install https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0-rc1.tgz
+npm install react-native-stroeer-sdk
 ```
 
 **Yarn:**
 
 ```bash
-yarn add react-native-stroeer-sdk@https://stroeersdk.github.io/react-native/npm/react-native-stroeer-sdk-1.0.0-rc1.tgz
+yarn add react-native-stroeer-sdk
 ```
-
-Always use the full `https://` URL: without it, npm treats the address as a local file path.
 
 ### 2. Android: add the SDK repository
 
