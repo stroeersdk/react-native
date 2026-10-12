@@ -478,7 +478,6 @@ You can then remove `allow-remote=root` from your `.npmrc` if no other dependenc
 | Before | 1.0 |
 |--------|-----|
 | `setUserTargeting`, `setContextTargeting`, `setContextDataTargeting`, `setCustomTargeting` | `setGlobalCustomTargeting({ user: [...], context: [...], <key>: [...] })` |
-| `reloadConfigurationAndGetSlotNames` | `resetAndLoadConfiguration(applicationName)` |
 | `setApplicationName`, `clearConfigurationCache` (no result) | Return a Promise |
 | `getSlotNames` resolves `null` without a configuration | Rejects with `CONFIG_NOT_LOADED` |
 | `getConfiguration` | Resolves `null` when no configuration is loaded |
@@ -531,10 +530,6 @@ Every field of `setCustomInfo` is optional.
 
 `initialize` resolves only once. A second call while it is running rejects with
 `ALREADY_INITIALIZING`.
-
-**IabTestConsent**
-
-Removed from the library. It was test tooling.
 
 ### 5. Errors
 
