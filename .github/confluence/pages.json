@@ -1,0 +1,7 @@
+{
+  "_comment": "Maps repository Markdown files to existing Confluence pages. Set page_id to the numeric ID from the page URL (…/pages/<page_id>/…). Entries with an empty page_id are skipped. 'title' is optional; when omitted the current Confluence page title is kept.",
+  "pages": [
+    { "file": "docs/1.0/Integration.md", "page_id": "5024874499" },
+    { "file": "docs/ReleaseNotes.md", "page_id": "5028446335" }
+  ]
+}

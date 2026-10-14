@@ -1,0 +1,64 @@
+name: Update Confluence
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Only convert the documents, do not update Confluence'
+        type: boolean
+        default: false
+      force:
+        description: 'Update pages even if their content is unchanged'
+        type: boolean
+        default: false
+
+concurrency:
+  group: update-confluence
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+          cache-dependency-path: .github/scripts/requirements-confluence.txt
+
+      - name: Install dependencies
+        run: pip install -r .github/scripts/requirements-confluence.txt
+
+      - name: Publish documents to Confluence
+        env:
+          CONFLUENCE_BASE_URL: ${{ secrets.CONFLUENCE_BASE_URL }}
+          CONFLUENCE_USER: ${{ secrets.CONFLUENCE_USER }}
+          CONFLUENCE_API_TOKEN: ${{ secrets.CONFLUENCE_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          args=(--output-dir confluence-output)
+          [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
+          [ "$FORCE" = "true" ] && args+=(--force)
+          python .github/scripts/publish_confluence.py "${args[@]}"
+
+      - name: Upload generated storage format
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: confluence-storage-format
+          path: confluence-output
+          if-no-files-found: ignore
+          retention-days: 7
